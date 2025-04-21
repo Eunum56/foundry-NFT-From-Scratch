@@ -7,8 +7,6 @@ import {MyNFT} from "../src/MyNFT.sol";
 contract MyNFTScript is Script {
     MyNFT public myNFT;
 
-    function setUp() public {}
-
     function run() public {
         vm.startBroadcast();
 
