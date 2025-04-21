@@ -46,6 +46,8 @@ contract NFTHolder {
         external
         returns (bytes4)
     {
+        require(operator != address(0), NFTHolder__InvalidAddress());
+        require(from != address(0), NFTHolder__InvalidAddress());
         s_owner[tokenId] = from;
         unchecked {
             s_balances[from] += 1;
@@ -64,5 +66,13 @@ contract NFTHolder {
         IERC721(toContract).safeTransferFrom(address(this), msg.sender, tokenId);
         delete s_owner[tokenId];
         emit NFTWithdrawn(msg.sender, tokenId);
+    }
+
+    function ownerOf(uint256 tokenId) external view returns (address) {
+        return s_owner[tokenId];
+    }
+
+    function balanceOf(address account) external view returns (uint256) {
+        return s_balances[account];
     }
 }

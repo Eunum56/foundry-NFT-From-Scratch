@@ -62,10 +62,10 @@ contract MyNFT {
     }
 
     // EXTERNAL FUNCTIONS
-    function mint() external {
+    function mint(uint256 tokenId) external {
         require(s_NFTCounter < MAX_SUPPLY, MyNFT__MaxSupplyExceeds());
-        require(s_owner[s_NFTCounter] == address(0), MyNFT__AlreadyMinted());
-        _mint();
+        require(s_owner[tokenId] == address(0), MyNFT__AlreadyMinted());
+        _mint(tokenId);
     }
 
     function transferFrom(address _from, address _to, uint256 _tokenId) external {
@@ -100,18 +100,19 @@ contract MyNFT {
         emit ApprovalForAll(msg.sender, _operator, _approved);
     }
 
-    // PUBLIC FUNCTIONS
-    function supportsInterface(bytes4 interfaceId) public pure returns (bool) {
-        return interfaceId == type(IERC721).interfaceId;
+    function exposeUintToString(uint256 val) external pure returns (string memory) {
+        return uintToString(val);
     }
+
+    // PUBLIC FUNCTIONS
 
     // INTERNAL FUNCTIONS
 
     // PRIVATE FUNCTIONS
-    function _mint() private {
-        s_owner[s_NFTCounter] = msg.sender;
+    function _mint(uint256 tokenId) private {
+        s_owner[tokenId] = msg.sender;
         s_balances[msg.sender] += 1;
-        emit Transfer(address(0), msg.sender, s_NFTCounter);
+        emit Transfer(address(0), msg.sender, tokenId);
         s_NFTCounter++;
     }
 
@@ -131,8 +132,8 @@ contract MyNFT {
     }
 
     function _safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes memory _data) private {
-        _transferFrom(_from, _to, _tokenId);
         require(_checkOnERC721Received(_from, _to, _tokenId, _data), "MyNFT: Transfer to non-ERC721 receiver");
+        _transferFrom(_from, _to, _tokenId);
     }
 
     function _checkOnERC721Received(address _from, address _to, uint256 _tokenId, bytes memory _data)
